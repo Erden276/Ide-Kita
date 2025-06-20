@@ -64,7 +64,7 @@ func main() {
 						insertionsort(&p, no)
 						binarysearch(&p, no)
 					} else {
-						break
+						pilih = 3
 					}
 				case 4:
 					edit(&p, no)
@@ -78,9 +78,6 @@ func main() {
 					tampilkanDetailByID(p, no, idCari)
 				case 7:
 					tampilkanPopulerPeriode(p, no)
-				case 8:
-					clear()
-					break
 				}
 			}
 		default:
@@ -124,6 +121,7 @@ func data(n *int) {
 func tampilkanDetailByID(p array, no int, id int) {
 	var found bool = false
 	var i int
+
 	for i = 0; i < no; i++ {
 		if p[i].id == id {
 			fmt.Println()
@@ -136,84 +134,101 @@ func tampilkanDetailByID(p array, no int, id int) {
 			fmt.Println("Tanggal :", p[i].tanggal)
 			fmt.Println()
 			found = true
-			break
 		}
 	}
+
 	if !found {
 		fmt.Println("Data dengan ID tersebut tidak ditemukan.")
 	}
 }
 
+
 func tambahdata(p *array, no int) {
 	var pilih, idBaru int
 	var n int
 	var m error
-	for {
+	var idValid bool = false
+
+	for !idValid {
 		fmt.Print("ID: ")
 		n, m = fmt.Scan(&idBaru)
 		if m != nil || n != 1 {
 			fmt.Println("ID harus berupa angka, tidak boleh huruf!")
-			var inIdAgain string
-			fmt.Scan(&inIdAgain)
-			continue
-		}
-		if cariIndexByID(p, no, idBaru) != -1 {
+			var buang string
+			fmt.Scan(&buang) // buang input yang salah
+		} else if cariIndexByID(p, no, idBaru) != -1 {
 			fmt.Println("ID sudah digunakan, silakan masukkan ID lain!")
 		} else {
 			p[no].id = idBaru
-			break
+			idValid = true
 		}
 	}
+
 	fmt.Print("Judul: ")
 	fmt.Scan(&p[no].judul)
 	fmt.Print("Nama: ")
 	fmt.Scan(&p[no].nama)
 	fmt.Print("Status: ")
 	fmt.Scan(&p[no].status)
-	fmt.Println("Pilih Kategori: ")
-	fmt.Println("1. Produk")
-	fmt.Println("2. Pemasaran")
-	fmt.Println("3. Operasional")
-	fmt.Println("4. Teknologi")
-	fmt.Println("5. Lainnya")
-	fmt.Println("6. Back")
-	fmt.Print("Silahkan Pilih Kategori: ")
-	fmt.Scan(&pilih)
-	switch pilih {
-	case 1:
-		p[no].kategori = "Produk"
-	case 2:
-		p[no].kategori = "Pemasaran"
-	case 3:
-		p[no].kategori = "Operasional"
-	case 4:
-		p[no].kategori = "Teknologi"
-	case 5:
-		fmt.Print("Masukkan nama kategori baru: ")
-		fmt.Scan(&p[no].kategori)
-	default:
-		return
+
+	var kategoriValid bool = false
+	for !kategoriValid {
+		fmt.Println("Pilih Kategori: ")
+		fmt.Println("1. Produk")
+		fmt.Println("2. Pemasaran")
+		fmt.Println("3. Operasional")
+		fmt.Println("4. Teknologi")
+		fmt.Println("5. Lainnya")
+		fmt.Println("6. Back")
+		fmt.Print("Silahkan Pilih Kategori: ")
+		fmt.Scan(&pilih)
+
+		if pilih == 1 {
+			p[no].kategori = "Produk"
+			kategoriValid = true
+		} else if pilih == 2 {
+			p[no].kategori = "Pemasaran"
+			kategoriValid = true
+		} else if pilih == 3 {
+			p[no].kategori = "Operasional"
+			kategoriValid = true
+		} else if pilih == 4 {
+			p[no].kategori = "Teknologi"
+			kategoriValid = true
+		} else if pilih == 5 {
+			fmt.Print("Masukkan nama kategori baru: ")
+			fmt.Scan(&p[no].kategori)
+			kategoriValid = true
+		} else if pilih == 6 {
+			return
+		} else {
+			fmt.Println("Pilihan tidak valid.")
+		}
 	}
+
 	clear()
 	fmt.Print("Tanggal dibuat (YYYY-MM-DD): ")
 	fmt.Scan(&p[no].tanggal)
-	for {
+
+	var lanjut bool = false
+	for !lanjut {
 		fmt.Println("Apa yang ingin Anda lakukan selanjutnya?")
 		fmt.Println("1. Upvote Ide")
 		fmt.Println("2. Lanjut")
 		fmt.Print("Pilih: ")
 		fmt.Scan(&pilih)
-		switch pilih {
-		case 1:
+
+		if pilih == 1 {
 			upvote(p, no+1)
-		case 2:
+		} else if pilih == 2 {
 			clear()
-			return
-		default:
+			lanjut = true
+		} else {
 			fmt.Println("Pilihan tidak valid.")
 		}
 	}
 }
+
 
 func upvote(p *array, jumlah int) {
 	var id, idx int
@@ -271,6 +286,8 @@ func selectionsort(A *array, no int) {
 	fmt.Println("2. Upvote Terendah")
 	fmt.Println("3. Tanggal Terbaru")
 	fmt.Println("4. Tanggal Terlama")
+	fmt.Println("5. ID Tertinggi")
+	fmt.Println("6. ID Terendah")
 	fmt.Print("Silahkan Pilih Opsi: ")
 	fmt.Scan(&sc)
 	switch sc {
@@ -302,6 +319,22 @@ func selectionsort(A *array, no int) {
 		for i = 0; i < no; i++ {
 			for j = i + 1; j < no; j++ {
 				if A[i].tanggal > A[j].tanggal {
+					A[i], A[j] = A[j], A[i]
+				}
+			}
+		}
+	case 5:
+	for i = 0; i < no; i++ {
+		for j = i + 1; j < no; j++ {
+			if A[i].id < A[j].id {
+				A[i], A[j] = A[j], A[i]
+			}
+		}
+	}
+	case 6:
+		for i = 0; i < no; i++ {
+			for j = i + 1; j < no; j++ {
+				if A[i].id > A[j].id {
 					A[i], A[j] = A[j], A[i]
 				}
 			}
